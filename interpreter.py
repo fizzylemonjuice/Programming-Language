@@ -1,4 +1,4 @@
-from tokens import Integer, Float, Reserved
+from tokens import Integer, Float
 
 class Interpreter:
     def __init__(self, tree, base):
@@ -71,57 +71,25 @@ class Interpreter:
     def interpret(self, tree=None):
         if tree is None:
             tree = self.tree
-
-        if isinstance(tree, list):
-            if isinstance(tree[0], Reserved):
-                if tree[0].value == "if":
-                    for idx, condition in enumerate(tree[1][0]):
-                        evaluation = self.interpret(condition)
-                        if evaluation.value == 1:
-                            return self.interpret(tree[1][1][idx])
-                    
-                    if len(tree[1]) == 3:
-                        return self.interpret(tree[1][2])
-                    
-                    else:
-                        return
-                elif tree[0].value == "while":
-                    condition = self.interpret(tree[1][0])
-                    
-                    while condition.value == 1:
-                        # Doing the action
-                        print(self.interpret(tree[1][1]))
-
-                        # Checking the condition
-                        condition = self.interpret(tree[1][0])
-                    
-                    return
-
-        # Unary operation            
+       
         if isinstance(tree, list) and len(tree) == 2:
             expression = tree[1]
             if isinstance(expression, list):
                 expression = self.interpret(expression)
             return self.compute_unary(tree[0], expression)
         
-        # No operation
         elif not isinstance(tree, list):
             return tree
         
         else:
-            # Post order traversal
-
-            # Evaluating left subtree
             left_node = tree[0]
             if isinstance(left_node, list):
                 left_node = self.interpret(left_node)
 
-            # Evaluating right subtree
             right_node = tree[2]
             if isinstance(right_node, list):
                 right_node = self.interpret(right_node)
 
-            # Evaluating root node
             operator = tree[1]
             return self.compute_bin(left_node, operator, right_node)
 
