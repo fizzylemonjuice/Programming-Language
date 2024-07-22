@@ -39,57 +39,7 @@ class Parser:
             left_node = [left_node, operator, right_node]
 
         return left_node
-
-    # <bool_expr> := <comp_expr> and | or | not <comp_expr>
-
-    def if_statement(self):
-        self.move()
-        condition = self.boolean_expression()
-
-        if self.token.value == "do":
-            self.move()
-            action = self.statement()
-        
-            return condition, action
-        elif self.tokens[self.idx-1].value == "do":
-            action = self.statement()
-            return condition, action
-
-    def if_statements(self):
-        conditions = []
-        actions = []
-        if_statement = self.if_statement()
-
-        conditions.append(if_statement[0])
-        actions.append(if_statement[1])
-
-        while self.token.value == "elif":
-            if_statement = self.if_statement()
-            conditions.append(if_statement[0])
-            actions.append(if_statement[1])
-
-        if self.token.value == "else":
-            self.move()
-            self.move()
-            else_action = self.statement()
-
-            return [conditions, actions, else_action]
-
-        return [conditions, actions]
     
-    def while_statement(self):
-        self.move()
-        condition = self.boolean_expression()
-        
-        if self.token.value == "do":
-            self.move()
-            action = self.statement()
-            return [condition, action]
-        
-        elif self.tokens[self.idx-1].value == "do":
-            action = self.statement()
-            return [condition, action]
-
     def comp_expression(self):
         left_node = self.expression()
         while self.token.type == "COMP":
@@ -127,7 +77,6 @@ class Parser:
     
     def statement(self):
         if self.token.type == "DECL":
-            # Variable assignment
             self.move()
             left_node = self.variable()
             self.move()
@@ -139,7 +88,6 @@ class Parser:
                 return [left_node, operation, right_node]
 
         elif self.token.type == "INT" or self.token.type == "FLT" or self.token.type == "OP" or self.token.value == "not":
-            # Arithmetic expression
             return self.boolean_expression()
         
         elif self.token.value == "if":
